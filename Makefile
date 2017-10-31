@@ -41,5 +41,5 @@ run:
 	qemu-system-i386 -kernel $(BIN)/kernel.bin
 
 clean:
-	$(RM) $(BIN)/*.o $(BIN)/*.bin $(BIN)/*.iso
+	$(RM) $(ALLOBJ) $(TARGET)
 	rm -rf temp/
