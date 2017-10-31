@@ -15,7 +15,7 @@ ASMOBJ := $(patsubst $(SRC)/%.asm, $(BIN)/%.o, $(ASMSRC))
 ALLOBJ = $(ASMOBJ) $(COBJ) 
 TARGET = $(BIN)/kernel.bin
 
-all: $(TARGET)  kernel.iso
+all: $(TARGET)  $(BIN)/kernel.iso
 
 .PHONY: all install run clean
 
@@ -28,20 +28,17 @@ $(BIN)/%.o: $(SRC)/%.c
 $(TARGET): $(ALLOBJ)
 	$(LD) $(LD_FLAGS) -T $(LDSRC) -o $@ $^
 
-kernel.iso:
+$(BIN)/%.iso:
 	mkdir -p temp/boot/grub
 	cp $(TARGET) temp/boot/kernel
 	cp config/grub.cfg temp/boot/grub/grub.cfg
-	grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $(BIN)/kernel.iso temp
+	grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $@ temp
 
 install:
 	sudo apt-get install -y grub-pc-bin xorriso qemu
 
 run:
 	qemu-system-i386 -kernel $(BIN)/kernel.bin
-
-test:
-	@echo $(LDSRC)
 
 clean:
 	$(RM) $(BIN)/*.o $(BIN)/*.bin $(BIN)/*.iso
