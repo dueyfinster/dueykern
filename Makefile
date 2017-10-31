@@ -8,7 +8,7 @@ GRUB-MKRESCUE := grub-mkrescue
 
 all: kernel kernel.iso
 
-.PHONY: all install clean
+.PHONY: all install run clean
 
 kasm.o: kernel.asm 
 	$(NASM) $(NASM_FLAGS) -o $@ $<
@@ -26,10 +26,14 @@ kernel.iso:
 	grub-mkrescue -d /usr/lib/grub/i386-pc/ -o kernel.iso temp
 
 install:
-	sudo apt-get install -y grub-pc-bin xorriso
+	sudo apt-get install -y grub-pc-bin xorriso qemu
+
+run:
+	qemu-system-i386 -kernel kernel
 
 clean:
 	$(RM) kasm.o
 	$(RM) kc.o
 	$(RM) kernel
+	$(RM) kernel.iso
 	rm -rf temp/
