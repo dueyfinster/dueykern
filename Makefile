@@ -9,19 +9,24 @@ SRC := src
 BIN := bin
 CSRC := $(wildcard $(SRC)/*.c)
 ASMSRC := $(wildcard $(SRC)/*.asm)
+LDSRC := $(wildcard $(SRC)/*.ld)
+COBJ := $(patsubst $(SRC)/%.c, $(BIN)/%.o, $(CSRC))
+ASMOBJ := $(patsubst $(SRC)/%.asm, $(BIN)/%.o, $(ASMSRC))
+ALLOBJ = $(ASMOBJ) $(COBJ) 
+TARGET = $(BIN)/kernel.bin
 
-all: $(BIN)/kernel.bin kernel.iso
+all: $(TARGET)  kernel.iso
 
 .PHONY: all install run clean
 
-$(BIN)/kasm.o: $(SRC)/kernel.asm 
+$(BIN)/%.o: $(SRC)/%.asm 
 	$(NASM) $(NASM_FLAGS) -o $@ $<
 
-$(BIN)/kc.o: $(SRC)/kernel.c
+$(BIN)/%.o: $(SRC)/%.c
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
-$(BIN)/kernel.bin: $(BIN)/kasm.o $(BIN)/kc.o
-	$(LD) $(LD_FLAGS) -T $(SRC)/link.ld -o $@ $^
+$(TARGET): $(ALLOBJ)
+	$(LD) $(LD_FLAGS) -T $(LDSRC) -o $@ $^
 
 kernel.iso:
 	mkdir -p temp/boot/grub
@@ -34,6 +39,9 @@ install:
 
 run:
 	qemu-system-i386 -kernel $(BIN)/kernel.bin
+
+test:
+	@echo $(LDSRC)
 
 clean:
 	$(RM) $(BIN)/*.o $(BIN)/*.bin $(BIN)/*.iso

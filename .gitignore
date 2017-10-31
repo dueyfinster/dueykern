@@ -4,6 +4,7 @@ kernel
 temp/
 tags
 *.iso
+*.bin
 
 # Object files
 *.o
