@@ -30,7 +30,7 @@ $(TARGET): $(ALLOBJ)
 
 kernel.iso:
 	mkdir -p temp/boot/grub
-	cp $(BIN)/kernel.bin temp/boot/kernel
+	cp $(TARGET) temp/boot/kernel
 	cp config/grub.cfg temp/boot/grub/grub.cfg
 	grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $(BIN)/kernel.iso temp
 
