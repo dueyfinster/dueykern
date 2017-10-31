@@ -41,7 +41,7 @@ $(BIN)/%.iso:
 	$(GRUB-MKRESCUE) -d /usr/lib/grub/i386-pc/ -o $@ temp
 
 install:
-	sudo apt-get install -y grub-pc-bin xorriso qemu
+	sudo apt-get install -y nasm gcc grub-pc-bin xorriso qemu
 
 run:
 	$(QEMU) -kernel $(BIN)/kernel.bin
