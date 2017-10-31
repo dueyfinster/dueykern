@@ -1,18 +1,24 @@
 CC := gcc
-CC_FLAGS := -m32
 NASM := nasm
-NASM_FLAGS := -felf32
 LD := ld
-LD_FLAGS := -m elf_i386
 GRUB-MKRESCUE := grub-mkrescue
+QEMU := qemu-system-i386
+
+CC_FLAGS := -m32
+NASM_FLAGS := -felf32
+LD_FLAGS := -m elf_i386
+
 SRC := src
 BIN := bin
+
 CSRC := $(wildcard $(SRC)/*.c)
 ASMSRC := $(wildcard $(SRC)/*.asm)
 LDSRC := $(wildcard $(SRC)/*.ld)
+
 COBJ := $(patsubst $(SRC)/%.c, $(BIN)/%.o, $(CSRC))
 ASMOBJ := $(patsubst $(SRC)/%.asm, $(BIN)/%.o, $(ASMSRC))
 ALLOBJ = $(ASMOBJ) $(COBJ) 
+
 TARGET = $(BIN)/kernel.bin
 
 all: $(TARGET)  $(BIN)/kernel.iso
@@ -32,13 +38,13 @@ $(BIN)/%.iso:
 	mkdir -p temp/boot/grub
 	cp $(TARGET) temp/boot/kernel
 	cp config/grub.cfg temp/boot/grub/grub.cfg
-	grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $@ temp
+	$(GRUB-MKRESCUE) -d /usr/lib/grub/i386-pc/ -o $@ temp
 
 install:
 	sudo apt-get install -y grub-pc-bin xorriso qemu
 
 run:
-	qemu-system-i386 -kernel $(BIN)/kernel.bin
+	$(QEMU) -kernel $(BIN)/kernel.bin
 
 clean:
 	$(RM) $(ALLOBJ) $(TARGET)
