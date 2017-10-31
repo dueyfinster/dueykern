@@ -7,6 +7,8 @@ LD_FLAGS := -m elf_i386
 GRUB-MKRESCUE := grub-mkrescue
 SRC := src
 BIN := bin
+CSRC := $(wildcard $(SRC)/*.c)
+ASMSRC := $(wildcard $(SRC)/*.asm)
 
 all: $(BIN)/kernel.bin kernel.iso
 
@@ -15,7 +17,7 @@ all: $(BIN)/kernel.bin kernel.iso
 $(BIN)/kasm.o: $(SRC)/kernel.asm 
 	$(NASM) $(NASM_FLAGS) -o $@ $<
 
-$(BIN)/kc.o: $(SRC)/kernel.c $(BIN)/kasm.o
+$(BIN)/kc.o: $(SRC)/kernel.c
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 $(BIN)/kernel.bin: $(BIN)/kasm.o $(BIN)/kc.o
