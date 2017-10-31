@@ -1,17 +1,25 @@
-all: kernel
+CC := gcc
+CC_FLAGS := -m32
+NASM := nasm
+NASM_FLAGS := -felf32
+LD := ld
+LD_FLAGS := -m elf_i386 -T link.ld
+GRUB-MKRESCUE := grub-mkrescue
+
+all: kernel kernel.iso
 
 .PHONY: all clean
 
-kasm.o:
-	nasm -f elf32 kernel.asm -o kasm.o
+kasm.o: kernel.asm 
+	$(NASM) $(NASM_FLAGS) -o $@ $<
 
-kc.o: kasm.o
-	gcc -m32 -c kernel.c -o kc.o
+kc.o: kernel.c kasm.o
+	$(CC) $(CC_FLAGS) -c $< -o $@
 
-kernel: kc.o
-	ld -m elf_i386 -T link.ld -o kernel kasm.o kc.o
+kernel: kasm.o kc.o
+	$(LD) $(LD_FLAGS) -o $@ $^
 
-iso:
+kernel.iso:
 	mkdir -p temp/boot/grub
 	cp kernel temp/boot/kernel
 	cp grub.cfg temp/boot/grub/grub.cfg
@@ -21,4 +29,4 @@ clean:
 	$(RM) kasm.o
 	$(RM) kc.o
 	$(RM) kernel
-	$(RM) temp/
+	rm -rf temp/
