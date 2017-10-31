@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 kernel
+temp/
 
 # Object files
 *.o
